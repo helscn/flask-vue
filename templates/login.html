@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="keywords" content="Application">
+<meta name="description" content="登陆">
+{% include "import.html" ignore missing with context %}
+<title>登陆</title>
+</head>
+<body class="easyui-layout">
+    <div style="align:center; height:600px; width:400px; position:absolute; top:50%; left:50%; margin:-200px 0 0 -250px;">
+	<form id="login" name="login" action="{{ url_for('login') }}" method="post">
+		<fieldset>
+		<legend>登陆</legend>
+		<table>
+			<tr>
+				<td>{{ form.username.label }}</td>
+				<td>{{ form.username(size=25) }}</td>
+			</tr>
+			<tr>
+				<td>{{ form.password.label }}</td>
+				<td>{{ form.password(size=25) }}</td>
+			</tr>
+			<tr>
+				<td>{{ form.remember_me.label }}</td>
+				<td>{{ form.remember_me }}</td>
+			</tr>
+			<tr>
+				<td></td>
+				<td><a id="btn" href="javascript:$('#login').submit()" class="easyui-linkbutton" data-options="iconCls:'icon-search'">登陆</a></td>
+			</tr>
+		</table>
+		{{ form.csrf_token }}
+		</fieldset>
+	</form>
+	</div>
+	
+	{% if emsg %}
+	<script lang="javascript">
+		$.messager.alert('错误','{{ emsg }}');
+	</script>
+	{% endif %}
+</body>
+</html>
