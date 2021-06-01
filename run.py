@@ -5,9 +5,11 @@ import sys
 from views import app, db, User, Config
 
 application = app
-application.run('0.0.0.0', 8080)
 
-if len(sys.argv) >= 2:
+if __name__ == '__main__':
+    app.run('localhost', 5000)
+
+elif len(sys.argv) >= 2:
     # 获取命令行命令
     command = sys.argv[1]
 
@@ -22,15 +24,16 @@ if len(sys.argv) >= 2:
   The database has been initialized, the default username is 'admin', and the password is '123456'.
 ''')
 
-    elif command == 'server':
-        application.run('0.0.0.0', 8080)
-
+    elif command == 'serve':
+        if len(sys.argv) == 3:
+            application.run('localhost', int(sys.argv[2]))
+        elif len(sys.argv) == 4:
+            application.run(sys.argv[2], int(sys.argv[3]))
+        else:
+            application.run('localhost', 5000)
     else:
-        print('Unknow command!')
-
-elif __name__ == '__main__':
-    print('''
+        print('''
   Command:
-      imgrate : Init the application and install the database
-      server  : Start the simple web server to localhost:5000
-    ''')
+      imgrate : Init the application and install the database.
+      serve   : Start the simple web server , the default address is localhost:5000.
+        ''')
