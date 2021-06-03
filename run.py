@@ -6,14 +6,11 @@ from views import app, db, User, Config
 
 application = app
 
-if __name__ == '__main__':
-    app.run('localhost', 5000)
-
-elif len(sys.argv) >= 2:
+if len(sys.argv) >= 2:
     # 获取命令行命令
     command = sys.argv[1]
 
-    if command == 'imgrate':
+    if command.lower() == 'imgrate':
         db.drop_all()
         db.create_all()
         admin = User(username='admin', password='123456')
@@ -24,7 +21,7 @@ elif len(sys.argv) >= 2:
   The database has been initialized, the default username is 'admin', and the password is '123456'.
 ''')
 
-    elif command == 'serve':
+    elif command.lower() == 'serve':
         if len(sys.argv) == 3:
             application.run('localhost', int(sys.argv[2]))
         elif len(sys.argv) == 4:
@@ -37,3 +34,5 @@ elif len(sys.argv) >= 2:
       imgrate : Init the application and install the database.
       serve   : Start the simple web server , the default address is localhost:5000.
         ''')
+elif __name__ == '__main__':
+    app.run('localhost', 5000)
