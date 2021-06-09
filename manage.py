@@ -2,24 +2,23 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from views import app, db, User, Config
+from views import app
+from models import db,create_database
 
 application = app
 
 if len(sys.argv) >= 2:
     # 获取命令行命令
-    command = sys.argv[1]
+    command = sys.argv[1].lower()
 
-    if command.lower() == 'imgrate':
-        db.drop_all()
-        db.create_all()
-        admin = User(username='admin', password='123456')
-        admin.save()
-        cfg = Config(parameter='setting', value='OK')
-        cfg.save()
-        print('''
-  The database has been initialized, the default username is 'admin', and the password is '123456'.
-''')
+    if command == 'dropdb':
+        q=input('Are you sure you want to delete all database data?[Y/N]')
+        if q.upper() == 'Y':
+            db.drop_all()
+            print('All data has been deleted.')
+
+    elif command == 'createdb':
+        create_database()
 
     elif command.lower() == 'serve':
         if len(sys.argv) == 3:
@@ -31,7 +30,8 @@ if len(sys.argv) >= 2:
     else:
         print('''
   Command:
-      imgrate : Init the application and install the database.
+      creatdb : Init the application and install the database.
+      dropdb  : Delete all database data.
       serve   : Start the simple web server , the default address is localhost:5000.
         ''')
 elif __name__ == '__main__':
