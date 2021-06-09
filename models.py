@@ -38,6 +38,7 @@ class BaseModel(db.Model):
     def to_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+
 class User(BaseModel):
     __tablename__ = 'users'
 
@@ -67,16 +68,17 @@ class User(BaseModel):
         raise AttributeError('Password is not a readable attribute')
 
     @password.setter
-    def password(self,password):
+    def password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    def generate_token(self,expiration):
+    def generate_token(self, expiration):
         """返回当前User对象的验证token"""
-        s = TimedJSONWebSignatureSerializer(Setting.SECRET_KEY,expires_in = expiration)
-        return  s.dumps({'id':self.id}).decode('utf-8')
+        s = TimedJSONWebSignatureSerializer(
+            Setting.SECRET_KEY, expires_in=expiration)
+        return s.dumps({'id': self.id}).decode('utf-8')
 
     @staticmethod
     def verify_token(token):
@@ -89,15 +91,55 @@ class User(BaseModel):
         return User.query.get(data['id'])
 
     def to_dict(self):
-        columns=list(filter(lambda c:('password' not in c.name),self.__table__.columns))
+        columns = list(
+            filter(lambda c: ('password' not in c.name), self.__table__.columns))
         return {c.name: getattr(self, c.name) for c in columns}
+
 
 def create_database():
     """删除数据库中所有数据并初始化"""
     db.create_all()
-    admin = User(username=Setting.DEFAULT_USERNAME, password=Setting.DEFAULT_PASSWORD)
+    admin = User(username=Setting.DEFAULT_USERNAME,
+                 password=Setting.DEFAULT_PASSWORD)
     try:
         admin.save()
-        print("The database has been created, the default username is '{}', and the password is '{}'.".format(Setting.DEFAULT_USERNAME,Setting.DEFAULT_PASSWORD))
+        print("The database has been created, the default username is '{}', and the password is '{}'.".format(
+            Setting.DEFAULT_USERNAME, Setting.DEFAULT_PASSWORD))
     except:
         print("The default 'admin' user already exists.")
+
+
+def permission_required(func):
+    from flask import g
+    from functools import wraps
+
+    @wraps(func)
+    def wrap_func(cls, *args, **kwargs):
+        method = func.__name__
+        resource = cls.__class__.__name__
+        current_user = g.current_user
+
+        if hasattr(cls, '__resource__'):
+            resource = cls.__resource__
+        # 如果不存在权限，则返回
+        return func(cls, *args, **kwargs)
+
+    return wrap_func
+
+
+class Permission(BaseModel):
+    __tablename__ = 'permissions'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    role_id = db.Column(db.Integer)
+    resource = db.Column(db.String(25))
+    get = db.Column(db.Boolean)
+    post = db.Column(db.Boolean)
+    put = db.Column(db.Boolean)
+    patch = db.Column(db.Boolean)
+    delete = db.Column(db.Boolean)
+
+
+class Role(BaseModel):
+    __tablename__ = 'roles'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(25))

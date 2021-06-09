@@ -79,3 +79,20 @@ class UsersRes(Resource):
         user = User(username, password)
         user.save()
         return {'success': True}, 201
+
+
+def permission_required(func):
+    from flask import g
+    from functools import wraps
+
+    @wraps(func)
+    def wrap_func(cls, *args, **kwargs):
+        method = func.__name__
+        resource = cls.__class__.__name__
+        current_user = g.current_user
+        if hasattr(cls, '__resource__'):
+            resource = cls.__resource__
+        # 如果不存在权限，则返回
+        return func(cls, *args, **kwargs)
+
+    return wrap_func
