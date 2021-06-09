@@ -27,7 +27,7 @@ class UserRes(Resource):
         user = User.get(id)
         if user:
             user.delete()
-            return {'success': True}
+            return '', 204
         else:
             abort(404, error='User not exist.')
 
@@ -50,7 +50,7 @@ class UserRes(Resource):
                 else:
                     user.password = password
             user.save()
-            return {'success': True}
+            return {'success': True}, 201
         else:
             abort(404, error='User not exist.')
 
