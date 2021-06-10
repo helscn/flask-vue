@@ -4,13 +4,34 @@
 from flask import g, Blueprint
 from flask_restful import Api, abort, Resource, reqparse
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth, MultiAuth
-from models import User
+from Models import User
 from settings import Setting
+
+
+##################### 资源权限验证 #############################
+
+def permission_required(func):
+    from flask import g
+    from functools import wraps
+
+    @wraps(func)
+    def wrap_func(cls, *args, **kwargs):
+        method = func.__name__
+        resource = cls.__class__.__name__
+        current_user = g.current_user
+        if hasattr(cls, '__resource__'):
+            resource = cls.__resource__
+        # 如果不存在权限，则返回
+        return func(cls, *args, **kwargs)
+
+    return wrap_func
+
 
 ##################### 资源请求验证 #############################
 basic_auth = HTTPBasicAuth()
 token_auth = HTTPTokenAuth(scheme='')
-# auth = MultiAuth(token_auth,basic_auth)
+multi_auth = MultiAuth(token_auth, basic_auth)
+
 auth = token_auth
 
 tokenParse = reqparse.RequestParser()
@@ -21,7 +42,6 @@ tokenParse.add_argument(Setting.TOKEN_KEY, dest='token',
 @token_auth.verify_token
 def verify_token(token):
     g.current_user = None
-    # token = request.headers.get(Setting.TOKEN_KEY)
     args = tokenParse.parse_args()
     token = args.get('token')
     if not token:

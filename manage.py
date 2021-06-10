@@ -3,7 +3,7 @@
 
 import sys
 from views import app
-from models import db,create_database
+from Models import db, init_db
 
 application = app
 
@@ -12,13 +12,13 @@ if len(sys.argv) >= 2:
     command = sys.argv[1].lower()
 
     if command == 'dropdb':
-        q=input('Are you sure you want to delete all database data?[Y/N]')
+        q = input('Are you sure you want to delete all database data?[Y/N]')
         if q.upper() == 'Y':
             db.drop_all()
             print('All data has been deleted.')
 
     elif command == 'createdb':
-        create_database()
+        init_db()
 
     elif command.lower() == 'serve':
         if len(sys.argv) == 3:

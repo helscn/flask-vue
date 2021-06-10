@@ -1,17 +1,18 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from models import app
+from main import app
 from auth import login
 from Resources import resources
 
 # 注册登录 login 蓝图
-app.register_blueprint(login,url_prefix='/')
+app.register_blueprint(login, url_prefix='/')
 
 # 注册 Restful API 蓝图
-app.register_blueprint(resources,url_prefix='/api')
+app.register_blueprint(resources, url_prefix='/api')
 
-# 打开前端主页
+
+# 注册前端主页路由
 @app.route('/')
 @app.route('/index')
 def index():

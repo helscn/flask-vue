@@ -1,54 +1,27 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
+from .base_model import *
 
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
 from itsdangerous import TimedJSONWebSignatureSerializer
 from settings import Setting
 
-# 初始化app,取消显示静态资源的 statice 路由
-app = Flask(__name__, static_url_path='', static_folder=Setting.STATIC_FOLDER)
-
-# 载入配置
-app.config.from_object('settings.Setting')
-
-# 全局跨域访问设置
-if Setting.SUPPORT_CORS:
-    from flask_cors import CORS
-    CORS(app, supports_credentials=True)
-
-# 数据库模型对象
-db = SQLAlchemy(app)
-
-
-class BaseModel(db.Model):
-    __abstract__ = True   # 声明当前类为抽象类，被继承调用不被创建
-
-    def save(self):
-        db.session.add(self)
-        db.session.commit()
-
-    def delete(self):
-        db.session.delete(self)
-        db.session.commit()
-
-    def to_dict(self):
-        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
 
 class User(BaseModel):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(25))
-    password_hash = db.Column(db.String(128))
+    username = db.Column(db.String(25), nullable=False)
+    password_hash = db.Column(db.String(128), nullable=False)
+    role_id = db.Column(db.Integer, ForeignKey('roles.id'))
+    role = relationship('Role', backref='users')
 
-    def __init__(self, username, password):
+    def __init__(self, username, password, role_id):
         self.username = username
         self.password_hash = generate_password_hash(password)
+        self.role_id = role_id
 
     def __repr__(self):
         return '<User:{}>'.format(self.username)
@@ -59,9 +32,6 @@ class User(BaseModel):
         if not user_id:
             return None
         return User.query.filter(User.id == user_id).first()
-
-    def get_id(self):
-        return self.id
 
     @property
     def password(self):
@@ -96,19 +66,6 @@ class User(BaseModel):
         return {c.name: getattr(self, c.name) for c in columns}
 
 
-def create_database():
-    """删除数据库中所有数据并初始化"""
-    db.create_all()
-    admin = User(username=Setting.DEFAULT_USERNAME,
-                 password=Setting.DEFAULT_PASSWORD)
-    try:
-        admin.save()
-        print("The database has been created, the default username is '{}', and the password is '{}'.".format(
-            Setting.DEFAULT_USERNAME, Setting.DEFAULT_PASSWORD))
-    except:
-        print("The default 'admin' user already exists.")
-
-
 def permission_required(func):
     from flask import g
     from functools import wraps
@@ -125,21 +82,3 @@ def permission_required(func):
         return func(cls, *args, **kwargs)
 
     return wrap_func
-
-
-class Permission(BaseModel):
-    __tablename__ = 'permissions'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    role_id = db.Column(db.Integer)
-    resource = db.Column(db.String(25))
-    get = db.Column(db.Boolean)
-    post = db.Column(db.Boolean)
-    put = db.Column(db.Boolean)
-    patch = db.Column(db.Boolean)
-    delete = db.Column(db.Boolean)
-
-
-class Role(BaseModel):
-    __tablename__ = 'roles'
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name = db.Column(db.String(25))
