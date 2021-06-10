@@ -1,3 +1,3 @@
-from .urls import resources
+from .urls import Resources
 
-__all__=['resources']
+__all__ = ['Resources']

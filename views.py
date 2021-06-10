@@ -2,14 +2,14 @@
 # -*- coding: utf-8 -*-
 
 from main import app
-from auth import login
-from Resources import resources
+from auth import UserLogin
+from resources import Resources
 
 # 注册登录 login 蓝图
-app.register_blueprint(login, url_prefix='/')
+app.register_blueprint(UserLogin, url_prefix='/')
 
 # 注册 Restful API 蓝图
-app.register_blueprint(resources, url_prefix='/api')
+app.register_blueprint(Resources, url_prefix='/api')
 
 
 # 注册前端主页路由

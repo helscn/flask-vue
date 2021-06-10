@@ -63,21 +63,3 @@ class User(BaseModel):
         columns = list(
             filter(lambda c: ('password' not in c.name), self.__table__.columns))
         return {c.name: getattr(self, c.name) for c in columns}
-
-
-def permission_required(func):
-    from flask import g
-    from functools import wraps
-
-    @wraps(func)
-    def wrap_func(cls, *args, **kwargs):
-        method = func.__name__
-        resource = cls.__class__.__name__
-        current_user = g.current_user
-
-        if hasattr(cls, '__resource__'):
-            resource = cls.__resource__
-        # 如果不存在权限，则返回
-        return func(cls, *args, **kwargs)
-
-    return wrap_func

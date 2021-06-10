@@ -3,7 +3,7 @@
 
 import sys
 from views import app
-from Models import db, init_db
+from models import db, init_db
 
 application = app
 

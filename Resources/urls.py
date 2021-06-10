@@ -8,9 +8,9 @@ from flask_restful import Api
 from .users import User, Users
 
 # 创建资源蓝图
-resources = Blueprint('api', __name__)
+Resources = Blueprint('api', __name__)
 
 # 将导入的 Restful API 资源注册到蓝图中
-api = Api(resources)
+api = Api(Resources)
 api.add_resource(User, '/users/<int:id>')
 api.add_resource(Users, '/users')

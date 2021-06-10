@@ -5,7 +5,7 @@ from functools import wraps
 from flask import g, Blueprint
 from flask_restful import Api, abort, Resource, reqparse
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth, MultiAuth
-from Models import User
+from models import User
 from settings import Setting
 
 
@@ -125,7 +125,7 @@ class GetToken(Resource):
 
 
 # 注册登录路由至 login 蓝图中
-login = Blueprint('login', __name__)
-api = Api(login)
+UserLogin = Blueprint('login', __name__)
+api = Api(UserLogin)
 api.add_resource(Login, '/login')
 api.add_resource(GetToken, '/gettoken')

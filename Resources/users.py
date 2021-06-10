@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from auth import auth
-from Models import User
+from models import User
 from flask_restful import abort, Resource, reqparse
 
 userParse = reqparse.RequestParser()
