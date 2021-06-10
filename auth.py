@@ -1,6 +1,7 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
 
+from functools import wraps
 from flask import g, Blueprint
 from flask_restful import Api, abort, Resource, reqparse
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth, MultiAuth
@@ -11,16 +12,23 @@ from settings import Setting
 ##################### 资源权限验证 #############################
 
 def permission_required(func):
-    from flask import g
-    from functools import wraps
-
+    # 用户访问资源接口的权限检查函数，此装饰器必须放在登录auth验证装饰器后面
     @wraps(func)
     def wrap_func(cls, *args, **kwargs):
-        method = func.__name__
-        resource = cls.__class__.__name__
+        # 请求方法名称，如get,put,delete等
+        method = func.__name__.lower()
+
+        # 请求的资源名称，用于验证对应资源的权限
+        # 如果资源类存在 __resource__ 属性则以 __resource__ 作为资源名称
+        # 否则以资源类名的小写作为资源名称
+        resource = cls.__resource__.lower() if hasattr(
+            cls, '__resource__') else cls.__class__.__name__.lower()
+
+        # 当前登录的用户
         current_user = g.current_user
-        if hasattr(cls, '__resource__'):
-            resource = cls.__resource__
+        if not current_user:
+            abort(401, message='Unauthorized access')
+
         # 如果不存在权限，则返回
         return func(cls, *args, **kwargs)
 

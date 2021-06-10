@@ -28,7 +28,7 @@ def init_db():
 
     user_permission = Permission(
         role_id=role.id,
-        resource='user',
+        resource='users',
         get=True,
         post=True,
         put=True,
