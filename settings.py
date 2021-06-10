@@ -28,7 +28,7 @@ class Setting:
     TOKEN_EXPIRATION = 600
 
     # 链接数据库
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///{}/test_db.db'.format(BASE_DIR)
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///{}/test_data.db'.format(BASE_DIR)
 
     # 跟踪数据库修改
     SQLALCHEMY_TRACK_MODIFICATIONS = False

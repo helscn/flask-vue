@@ -17,7 +17,7 @@ if len(sys.argv) >= 2:
             db.drop_all()
             print('All data has been deleted.')
 
-    elif command == 'createdb':
+    elif command == 'initdb':
         init_db()
 
     elif command.lower() == 'serve':

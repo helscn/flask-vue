@@ -2,9 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from main import db
-from sqlalchemy import ForeignKey
-from sqlalchemy.orm import relationship, backref
-
 
 class BaseModel(db.Model):
     # 当前对象模型类为抽象类，只能被继承使用

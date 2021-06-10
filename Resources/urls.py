@@ -1,15 +1,16 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
 
-from flask import Blueprint  
+from flask import Blueprint
 from flask_restful import Api
 
 # 从当前路径中导入需要加载的 Restful 资源对象
-from .users import UserRes,UsersRes
+from .users import User, Users
 
-resources  = Blueprint('api', __name__)
+# 创建资源蓝图
+resources = Blueprint('api', __name__)
+
+# 将导入的 Restful API 资源注册到蓝图中
 api = Api(resources)
-
-# 将导入的 Restful 资源注册到蓝图中
-api.add_resource(UserRes,'/users/<int:id>')
-api.add_resource(UsersRes,'/users')
+api.add_resource(User, '/users/<int:id>')
+api.add_resource(Users, '/users')

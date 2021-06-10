@@ -10,7 +10,7 @@ userParse.add_argument('username', type=str)
 userParse.add_argument('password', type=str)
 
 
-class UserRes(Resource):
+class User(Resource):
     decorators = [auth.login_required]
 
     def get(self, id):
@@ -52,7 +52,7 @@ class UserRes(Resource):
             abort(404, error='User not exist.')
 
 
-class UsersRes(Resource):
+class Users(Resource):
     decorators = [auth.login_required]
 
     def get(self):

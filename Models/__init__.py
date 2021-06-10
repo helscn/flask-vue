@@ -13,7 +13,6 @@ def init_db():
     db.create_all()
 
     role = Role(rolename='管理员')
-    role.save()
 
     users_permission = Permission(
         role_id=role.id,
@@ -24,7 +23,6 @@ def init_db():
         patch=False,
         delete=False
     )
-    users_permission.save()
 
     user_permission = Permission(
         role_id=role.id,
@@ -35,14 +33,17 @@ def init_db():
         patch=True,
         delete=True
     )
-    user_permission.save()
 
     user = User(username=Setting.DEFAULT_USERNAME,
                 password=Setting.DEFAULT_PASSWORD,
                 role_id=role.id
                 )
+    role.users.add(user)
+    role.permissions.add(users_permission)
+    role.permissions.add(user_permission)
+
     try:
-        user.save()
+        role.save()
         print("The database has been created, the default username is '{}', and the password is '{}'.".format(
             Setting.DEFAULT_USERNAME, Setting.DEFAULT_PASSWORD))
     except:

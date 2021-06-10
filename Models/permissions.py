@@ -1,13 +1,13 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
 
-from .base_model import *
+from .base_model import db, BaseModel
 
 
 class Permission(BaseModel):
     __tablename__ = 'permissions'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    role_id = db.Column(db.Integer, ForeignKey('roles.id'))
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
 
     # 权限配置的资源名称，使用小写命名
     # 默认为资源对象类的小写，如果有 __resource__ 则使用 __resource__ 对应的资源名

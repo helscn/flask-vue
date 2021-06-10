@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-from .base_model import *
+from .base_model import db, BaseModel
 
 from werkzeug.security import check_password_hash
 from werkzeug.security import generate_password_hash
@@ -15,8 +15,7 @@ class User(BaseModel):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(25), nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
-    role_id = db.Column(db.Integer, ForeignKey('roles.id'))
-    role = relationship('Role', backref='users')
+    role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
 
     def __init__(self, username, password, role_id):
         self.username = username
