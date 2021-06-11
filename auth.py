@@ -13,40 +13,59 @@ from settings import Setting
 
 def permission_required(func):
     # 用户访问资源接口的权限检查函数，此装饰器必须放在登录auth验证装饰器后面
+    # 且只能用于单独装饰函数，不能放在资源 decorators 中
     @wraps(func)
     def wrap_func(cls, *args, **kwargs):
+
+        # 请求的资源名称，用于验证对应资源的权限
+        # 如果资源类存在 __resource_name__ 属性则以 __resource_name__ 作为资源名称
+        # 否则以资源定义的类名作为资源名称
+        resource_name = cls.__class__.__resource_name__ if hasattr(
+            cls.__class__, '__resource_name__') else cls.__class__.__name__
+
+        # 如果数据库中未设置此资源的权限，则以资源类的 __permission__ 判断权限
+        # 如果 __permission__ 也不存在，则默认允许访问
+        default_permission = cls.__permission__ if hasattr(
+            cls, '__permission__') else None
+
         # 请求方法名称，如get,put,delete等
         method = func.__name__.lower()
 
-        # 请求的资源名称，用于验证对应资源的权限
-        # 如果资源类存在 __resource__ 属性则以 __resource__ 作为资源名称
-        # 否则以资源类名的小写作为资源名称
-        resource = cls.__resource__.lower() if hasattr(
-            cls, '__resource__') else cls.__class__.__name__.lower()
-
-        # 当前登录的用户
+        # 获取当前登录的用户
         current_user = g.current_user
         if not current_user:
             abort(401, message='Unauthorized access')
 
-        # 如果不存在权限，则返回
+        # 检查当前用户对资源的访问权限，优先判断数据库中设置的权限
+        permission = current_user.role.get_resource_permission(resource_name)
+        if permission is None:
+            permission = default_permission
+        else:
+            permission = permission.to_dict()
+
+        if permission and permission.get(method, True) == False:
+            abort(403, message='Access forbidden')
+
+        # 如果该用户有资源访问权限，则正常调用函数
         return func(cls, *args, **kwargs)
 
     return wrap_func
 
 
-##################### 资源请求验证 #############################
+##################### 请求账号验证 #############################
 basic_auth = HTTPBasicAuth()
 token_auth = HTTPTokenAuth(scheme='')
 multi_auth = MultiAuth(token_auth, basic_auth)
 
-auth = token_auth
+# 默认以 Token 验证，也可以使用 Basic Http 验证或多重验证
+login_required = token_auth.login_required
 
 tokenParse = reqparse.RequestParser()
 tokenParse.add_argument(Setting.TOKEN_KEY, dest='token',
                         type=str, location=Setting.TOKEN_LOCATION, required=False)
 
 
+# Token 验证函数
 @token_auth.verify_token
 def verify_token(token):
     g.current_user = None
@@ -59,6 +78,7 @@ def verify_token(token):
         return g.current_user is not None
 
 
+# Basic Http 验证函数
 @basic_auth.verify_password
 def verify_password(username, password):
     g.current_user = None
@@ -70,17 +90,20 @@ def verify_password(username, password):
         return False
 
 
+# Token 验证错误处理函数
 @token_auth.error_handler
 def auth_error():
     return abort(401, message='Unauthorized access')
 
 
+# Basic Http 验证错误处理函数
 @basic_auth.error_handler
 def auth_error():
     return abort(401, message='Unauthorized access')
 
 
 ##################### 账号登录验证 #############################
+
 
 # 客户端登录认证
 class Login(Resource):
@@ -102,12 +125,10 @@ class Login(Resource):
         else:
             abort(401, message='Username or passowrd is incorrect!')
 
+
 # 客户端请求获取新token
-
-
 class GetToken(Resource):
-    decorators = [auth.login_required]
-
+    @login_required
     def get(self):
         args = tokenParse.parse_args()
         token = args.get('token')

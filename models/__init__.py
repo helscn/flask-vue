@@ -13,6 +13,7 @@ def init_db():
     db.create_all()
 
     role = Role(rolename='管理员')
+    role.save()
 
     users_permission = Permission(
         role_id=role.id,
@@ -26,7 +27,7 @@ def init_db():
 
     user_permission = Permission(
         role_id=role.id,
-        resource='users',
+        resource='user',
         get=True,
         post=True,
         put=True,
@@ -36,11 +37,11 @@ def init_db():
 
     user = User(username=Setting.DEFAULT_USERNAME,
                 password=Setting.DEFAULT_PASSWORD,
-                role_id=role.id
+                role_id=role.id,
                 )
-    role.users.add(user)
-    role.permissions.add(users_permission)
-    role.permissions.add(user_permission)
+    role.users.append(user)
+    role.permissions.append(users_permission)
+    role.permissions.append(user_permission)
 
     try:
         role.save()

@@ -1,7 +1,7 @@
 #!/usr/local/bin/python3
 # -*- coding: utf-8 -*-
 
-from auth import auth
+from auth import login_required, permission_required
 from models import User
 from flask_restful import abort, Resource, reqparse
 
@@ -10,8 +10,8 @@ userParse.add_argument('username', type=str)
 userParse.add_argument('password', type=str)
 
 
-class User(Resource):
-    decorators = [auth.login_required]
+class ApiUser(Resource):
+    decorators = [login_required]
 
     def get(self, id):
         user = User.get(id)
@@ -52,9 +52,21 @@ class User(Resource):
             abort(404, error='User not exist.')
 
 
-class Users(Resource):
-    decorators = [auth.login_required]
+class ApiUsers(Resource):
 
+    # 资源名称，用于检查数据库中每个 role 对应的 permission
+    # 如果没有定义此资源名，则以当前类名作为资源名
+    __resource_name__ = 'users'
+
+    # 默认的资源访问权限，当 role 没有定义对应的资源权限时以此权限为准
+    # 如果数据库中和类中均没有定义访问权限，则默认允许访问
+    __permission__ = {
+        'get': False,
+        'post': True
+    }
+
+    @login_required
+    @permission_required
     def get(self):
         users = User.query.all()
         return {
@@ -62,6 +74,8 @@ class Users(Resource):
             'data': [v.to_dict() for v in users]
         }
 
+    @login_required
+    @permission_required
     def post(self):
         args = userParse.parse_args()
         username = args.get('username')

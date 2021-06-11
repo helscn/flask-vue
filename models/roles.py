@@ -10,3 +10,9 @@ class Role(BaseModel):
     rolename = db.Column(db.String(25), nullable=False)
     users = db.relationship('User', backref='role', cascade='all')
     permissions = db.relationship('Permission', backref='role', cascade='all')
+
+    def get_resource_permission(self, resource):
+        for permission in self.permissions:
+            if permission.resource == resource:
+                return permission
+        return None

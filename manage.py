@@ -30,7 +30,7 @@ if len(sys.argv) >= 2:
     else:
         print('''
   Command:
-      creatdb : Init the application and install the database.
+      initdb : Init the application and install the database.
       dropdb  : Delete all database data.
       serve   : Start the simple web server , the default address is localhost:5000.
         ''')
