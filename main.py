@@ -13,7 +13,7 @@ sys.path.append(BASE_DIR)
 app = Flask(__name__, static_url_path='', static_folder=Setting.STATIC_FOLDER)
 
 # 载入配置
-app.config.from_object('settings.Setting')
+app.config.from_object(Setting)
 
 # 全局跨域访问设置
 if Setting.SUPPORT_CORS:

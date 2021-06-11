@@ -4,7 +4,17 @@ import os
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
-# 配置参数
+# 数据库连接配置
+DIALECT = 'mysql'
+DRIVER = 'mysqldb'
+USERNAME = 'root'
+PASSWORD = 123456
+HOST = '127.0.0.1'
+PORT = '3306'
+DATABASE = 'db_demo1'
+
+SQLALCHEMY_DATABASE_URI = '{dialect}+{driver}://{username}:{password}@{host}:{port}/{database}?charset=utf8'.format(
+    dialect=DIALECT, driver=DRIVER, username=USERNAME, password=PASSWORD, host=HOST, port=PORT, database=DATABASE)
 
 
 class Setting:
@@ -28,6 +38,7 @@ class Setting:
     TOKEN_EXPIRATION = 600
 
     # 链接数据库
+    # SQLALCHEMY_DATABASE_URI =
     SQLALCHEMY_DATABASE_URI = 'sqlite:///{}/test_data.db'.format(BASE_DIR)
 
     # 跟踪数据库修改
