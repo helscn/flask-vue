@@ -20,8 +20,8 @@ def permission_required(func):
         # 请求的资源名称，用于验证对应资源的权限
         # 如果资源类存在 __resource_name__ 属性则以 __resource_name__ 作为资源名称
         # 否则以资源定义的类名作为资源名称
-        resource_name = cls.__class__.__resource_name__ if hasattr(
-            cls.__class__, '__resource_name__') else cls.__class__.__name__
+        resource_name = getattr(
+            cls.__class__, '__resource_name__', cls.__class__.__name__)
 
         # 如果数据库中未设置此资源的权限，则以资源类的 __permission__ 判断权限
         # 如果 __permission__ 也不存在，则默认允许访问
@@ -66,7 +66,7 @@ tokenParse.add_argument(Setting.TOKEN_KEY, dest='token',
 
 
 # Token 验证函数
-@token_auth.verify_token
+@ token_auth.verify_token
 def verify_token(token):
     g.current_user = None
     args = tokenParse.parse_args()
@@ -79,7 +79,7 @@ def verify_token(token):
 
 
 # Basic Http 验证函数
-@basic_auth.verify_password
+@ basic_auth.verify_password
 def verify_password(username, password):
     g.current_user = None
     user = User.query.filter(User.username == username).first()
@@ -91,13 +91,13 @@ def verify_password(username, password):
 
 
 # Token 验证错误处理函数
-@token_auth.error_handler
+@ token_auth.error_handler
 def auth_error():
     return abort(401, error='Unauthorized access')
 
 
 # Basic Http 验证错误处理函数
-@basic_auth.error_handler
+@ basic_auth.error_handler
 def auth_error():
     return abort(401, error='Unauthorized access')
 
@@ -128,7 +128,7 @@ class Login(Resource):
 
 # 客户端请求获取新token
 class GetToken(Resource):
-    @login_required
+    @ login_required
     def get(self):
         args = tokenParse.parse_args()
         token = args.get('token')
