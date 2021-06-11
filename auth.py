@@ -93,13 +93,13 @@ def verify_password(username, password):
 # Token 验证错误处理函数
 @ token_auth.error_handler
 def auth_error():
-    return abort(401, error='Unauthorized access')
+    abort(401, error='Unauthorized access')
 
 
 # Basic Http 验证错误处理函数
 @ basic_auth.error_handler
 def auth_error():
-    return abort(401, error='Unauthorized access')
+    abort(401, error='Unauthorized access')
 
 
 ##################### 账号登录验证 #############################
