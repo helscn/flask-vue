@@ -34,7 +34,7 @@ def permission_required(func):
         # 获取当前登录的用户
         current_user = g.current_user
         if not current_user:
-            abort(401, message='Unauthorized access')
+            abort(401, error='Unauthorized access')
 
         # 检查当前用户对资源的访问权限，优先判断数据库中设置的权限
         permission = current_user.role.get_resource_permission(resource_name)
@@ -44,7 +44,7 @@ def permission_required(func):
             permission = permission.to_dict()
 
         if permission and permission.get(method, True) == False:
-            abort(403, message='Access forbidden')
+            abort(403, error='Access forbidden')
 
         # 如果该用户有资源访问权限，则正常调用函数
         return func(cls, *args, **kwargs)
@@ -93,13 +93,13 @@ def verify_password(username, password):
 # Token 验证错误处理函数
 @token_auth.error_handler
 def auth_error():
-    return abort(401, message='Unauthorized access')
+    return abort(401, error='Unauthorized access')
 
 
 # Basic Http 验证错误处理函数
 @basic_auth.error_handler
 def auth_error():
-    return abort(401, message='Unauthorized access')
+    return abort(401, error='Unauthorized access')
 
 
 ##################### 账号登录验证 #############################
@@ -123,7 +123,7 @@ class Login(Resource):
                 'expiration': Setting.TOKEN_EXPIRATION
             }
         else:
-            abort(401, message='Username or passowrd is incorrect!')
+            abort(401, error='Username or passowrd is incorrect!')
 
 
 # 客户端请求获取新token
@@ -142,7 +142,7 @@ class GetToken(Resource):
                 'expiration': Setting.TOKEN_EXPIRATION
             }
         else:
-            abort(401, message='Unauthorized access')
+            abort(401, error='Unauthorized access')
 
 
 # 注册登录路由至 login 蓝图中
