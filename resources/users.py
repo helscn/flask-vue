@@ -62,7 +62,7 @@ class ApiUsers(Resource):
     # 如果数据库中和类中均没有定义访问权限，则默认允许访问
     __permission__ = {
         'get': False,
-        'post': True
+        'post': False
     }
 
     @login_required

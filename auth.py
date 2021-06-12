@@ -37,7 +37,9 @@ def permission_required(func):
             abort(401, error='Unauthorized access')
 
         # 检查当前用户对资源的访问权限，优先判断数据库中设置的权限
-        permission = current_user.role.get_resource_permission(resource_name)
+        # permission = current_user.role.get_resource_permission(resource_name)
+        permission = current_user.role.permissions.filter_by(
+            resource=resource_name).first()
         if permission is None:
             permission = default_permission
         else:
