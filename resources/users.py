@@ -62,7 +62,7 @@ class ApiUsers(Resource):
     # 如果数据库中和类中均没有定义访问权限，则默认允许访问
     __permission__ = {
         'get': False,
-        'post': False
+        'post': True
     }
 
     @login_required
@@ -74,8 +74,6 @@ class ApiUsers(Resource):
             'data': [v.to_dict() for v in users]
         }
 
-    @login_required
-    @permission_required
     def post(self):
         args = userParse.parse_args()
         username = args.get('username')
