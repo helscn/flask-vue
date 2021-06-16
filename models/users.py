@@ -49,6 +49,14 @@ class User(BaseModel):
             Setting.SECRET_KEY, expires_in=expiration)
         return s.dumps({'id': self.id}).decode('utf-8')
 
+    def generate_response(self):
+        return {
+            'userid': self.id,
+            'username': self.username,
+            'token': self.generate_token(Setting.TOKEN_EXPIRATION),
+            'expiration': Setting.TOKEN_EXPIRATION
+        }
+
     @staticmethod
     def verify_token(token):
         """验证 token 是否有效,验证通过时返回User对象"""

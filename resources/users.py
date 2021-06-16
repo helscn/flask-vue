@@ -47,7 +47,7 @@ class ApiUser(Resource):
                 else:
                     user.password = password
             user.save()
-            return {'success': True}, 201
+            return user.generate_response(), 201
         else:
             abort(404, error='User not exist.')
 
@@ -85,6 +85,6 @@ class ApiUsers(Resource):
             abort(406, error='The username already exists.')
         if len(password) < 6:
             abort(406, error='The password is too short.')
-        user = User(username, password)
+        user = User(username, password, 2)
         user.save()
-        return {'success': True}, 201
+        return user.generate_response(), 201

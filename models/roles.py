@@ -15,6 +15,13 @@ class Role(BaseModel):
     permissions = db.relationship(
         'Permission', backref='role', lazy='dynamic', cascade='all')
 
+    @staticmethod
+    def get(role_id):
+        """根据角色ID返回角色对象"""
+        if not role_id:
+            return None
+        return Role.query.filter(Role.id == role_id).first()
+
     def add_permission(self, resource, **kwargs):
         # 新建资源访问权限
         permission = Permission(role_id=self.id, resource=resource, **kwargs)

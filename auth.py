@@ -118,12 +118,7 @@ class Login(Resource):
         args = parse.parse_args()
         user = User.query.filter(User.username == args['username']).first()
         if user and user.verify_password(args['password']):
-            return {
-                'userid': user.id,
-                'username': user.username,
-                'token': user.generate_token(Setting.TOKEN_EXPIRATION),
-                'expiration': Setting.TOKEN_EXPIRATION
-            }
+            return user.generate_response()
         else:
             abort(401, error='Username or passowrd is incorrect!')
 
@@ -137,12 +132,7 @@ class GetToken(Resource):
         user = User.verify_token(token)
         if user:
             g.current_user = user
-            return {
-                'userid': user.id,
-                'username': user.username,
-                'token': user.generate_token(Setting.TOKEN_EXPIRATION),
-                'expiration': Setting.TOKEN_EXPIRATION
-            }
+            return user.generate_response()
         else:
             abort(401, error='Unauthorized access')
 
