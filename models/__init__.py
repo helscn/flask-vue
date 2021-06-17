@@ -12,17 +12,13 @@ def init_db():
     db.drop_all()
     db.create_all()
 
-    admin = Role(name='管理员')
-    admin.save()
+    admins = Role(id=1, name='管理员')
+    admins.save()
 
-    admin.set_permission('user')
-    admin.set_permission('users')
+    admins.set_permission('user')
+    admins.set_permission('users')
 
-    admin.add_user(username=Setting.DEFAULT_USERNAME,
-                   password=Setting.DEFAULT_PASSWORD)
+    users = Role(id=2, name='普通用户')
+    users.save()
 
-    user = Role(name='普通用户')
-    user.save()
-
-    print("The database has been created, the default username is '{}', and the password is '{}'.".format(
-        Setting.DEFAULT_USERNAME, Setting.DEFAULT_PASSWORD))
+    print("The database has been created.")

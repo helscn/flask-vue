@@ -1,6 +1,6 @@
 **/__pycache__
 /.vscode
 /.env
-/test_data.db
+/test_data.*
 /frontend/node_modules
 /frontend/dist

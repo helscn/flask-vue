@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from functools import wraps
+from requests import Session
 from flask import g, Blueprint
 from flask_restful import Api, abort, Resource, reqparse
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth, MultiAuth
@@ -116,11 +117,48 @@ class Login(Resource):
         parse.add_argument('password', type=str, required=True,
                            help='Password is required.')
         args = parse.parse_args()
-        user = User.query.filter(User.username == args['username']).first()
-        if user and user.verify_password(args['password']):
-            return user.generate_response()
-        else:
+        userid = args['username'].strip()
+        password = args['password']
+        LOGIN_URL = 'http://eip.sye.com.cn/bpm/login'
+        QUERY_URL = 'http://eip.sye.com.cn/bpm/r?wf_num=R_S007_B016&wf_gridnum=V_S007_G012'
+
+        session = Session()
+        res = session.post(url=LOGIN_URL, data={
+            'UserName': userid,
+            'Password': password
+        })
+        if '用户名或密码错误' in res.text:
             abort(401, error='Username or passowrd is incorrect!')
+        res = session.post(url=QUERY_URL, data={
+            'm': userid
+        })
+        users = res.json()['rows']
+        userinfo = None
+        for u in users:
+            if u['Userid'] == userid:
+                userinfo = {
+                    'id': u['Userid'],
+                    'name': u['CnName'],
+                    'title': u['JobTitle'],
+                    'department': u['FolderName'],
+                    'phone': u['PhoneNumber'],
+                    'email': u['InternetAddress'],
+
+                }
+                break
+
+        user = User.query.filter_by(id=userid).first()
+
+        if user:
+            user.name = userinfo['name']
+            user.title = userinfo['title']
+            user.department = userinfo['department']
+            user.phone = userinfo['phone']
+            user.email = userinfo['email']
+        else:
+            user = User(**userinfo)
+        user.save()
+        return user.generate_response()
 
 
 # 客户端请求获取新token

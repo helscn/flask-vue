@@ -16,6 +16,8 @@ DATABASE = 'db_demo1'
 SQLALCHEMY_DATABASE_URI = '{dialect}+{driver}://{username}:{password}@{host}:{port}/{database}?charset=utf8'.format(
     dialect=DIALECT, driver=DRIVER, username=USERNAME, password=PASSWORD, host=HOST, port=PORT, database=DATABASE)
 
+SQLALCHEMY_DATABASE_URI = 'sqlite:///{}/test_data.db'.format(BASE_DIR)
+
 
 class Setting:
     # 网站静态目录设置,设置为前端build目录
@@ -39,7 +41,7 @@ class Setting:
 
     # 链接数据库
     # SQLALCHEMY_DATABASE_URI =
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///{}/test_data.db'.format(BASE_DIR)
+    SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI
 
     # 跟踪数据库修改
     SQLALCHEMY_TRACK_MODIFICATIONS = False
@@ -49,12 +51,6 @@ class Setting:
 
     # 数据库请求结束之后自动提交
     SQLALCHEMY_COMMIT_ON_TEARDOWN = True
-
-    # 默认初始用户名称
-    DEFAULT_USERNAME = 'admin'
-
-    # 默认初始用户密码
-    DEFAULT_PASSWORD = '123456'
 
     # 调试模式
     DEBUG = False

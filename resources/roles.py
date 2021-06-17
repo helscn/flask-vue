@@ -11,8 +11,19 @@ userParse.add_argument('password', type=str)
 
 
 class ApiRole(Resource):
-    decorators = [login_required]
+    # 资源名称，用于检查数据库中每个 role 对应的 permission
+    # 如果没有定义此资源名，则以当前类名作为资源名
+    __resource_name__ = 'roles'
 
+    # 默认的资源访问权限，当 role 没有定义对应的资源权限时以此权限为准
+    # 如果数据库中和类中均没有定义访问权限，则默认允许访问
+    __permission__ = {
+        'get': True,
+        'delete': False
+    }
+
+    @login_required
+    @permission_required
     def get(self, id):
         role = Role.get(id)
         if role:
@@ -20,6 +31,8 @@ class ApiRole(Resource):
         else:
             abort(404, error='Role not exist.')
 
+    @login_required
+    @permission_required
     def delete(self, id):
         role = Role.get(id)
         if role:
@@ -30,8 +43,6 @@ class ApiRole(Resource):
 
 
 class ApiRoles(Resource):
-    decorators = [login_required]
-
     # 资源名称，用于检查数据库中每个 role 对应的 permission
     # 如果没有定义此资源名，则以当前类名作为资源名
     __resource_name__ = 'roles'
@@ -39,10 +50,12 @@ class ApiRoles(Resource):
     # 默认的资源访问权限，当 role 没有定义对应的资源权限时以此权限为准
     # 如果数据库中和类中均没有定义访问权限，则默认允许访问
     __permission__ = {
-        'get': False,
-        'post': True
+        'get': True,
+        'post': False
     }
 
+    @login_required
+    @permission_required
     def get(self):
         roles = Role.query.all()
         return {
@@ -50,6 +63,8 @@ class ApiRoles(Resource):
             'data': [v.to_dict() for v in roles]
         }
 
+    @login_required
+    @permission_required
     def post(self):
         roleParse = reqparse.RequestParser()
         roleParse.add_argument('name', type=str)
