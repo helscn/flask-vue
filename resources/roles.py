@@ -5,10 +5,6 @@ from auth import login_required, permission_required
 from models import Role
 from flask_restful import abort, Resource, reqparse
 
-userParse = reqparse.RequestParser()
-userParse.add_argument('username', type=str)
-userParse.add_argument('password', type=str)
-
 
 class ApiRole(Resource):
     # 资源名称，用于检查数据库中每个 role 对应的 permission

@@ -176,7 +176,7 @@ class GetToken(Resource):
 
 
 # 注册登录路由至 login 蓝图中
-UserLogin = Blueprint('login', __name__)
+UserLogin = Blueprint('auth', __name__)
 api = Api(UserLogin)
 api.add_resource(Login, '/login')
 api.add_resource(GetToken, '/gettoken')

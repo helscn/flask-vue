@@ -17,6 +17,8 @@ class User(BaseModel):
     phone = db.Column(db.String(30))
     email = db.Column(db.String(40))
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
+    files = db.relationship(
+        'File', backref='user', lazy='dynamic', cascade='all')
 
     def __init__(self, id, name, title='', department='', phone='', email='', role_id=2):
         self.id = id

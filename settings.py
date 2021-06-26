@@ -23,6 +23,12 @@ class Setting:
     # 网站静态目录设置,设置为前端build目录
     STATIC_FOLDER = os.path.join(BASE_DIR, 'frontend/dist')
 
+    # 文件上传的保存目录
+    UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
+
+    # 文件上传最大文件大小
+    MAX_CONTENT_LENGTH = 16 * 1024 * 1024
+
     # 是否允许跨源资源共享访问
     SUPPORT_CORS = True
 

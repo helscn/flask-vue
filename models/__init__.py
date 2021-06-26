@@ -5,6 +5,7 @@ from settings import Setting
 from .roles import Role
 from .permissions import Permission
 from .users import User
+from .files import File
 
 
 def init_db():
