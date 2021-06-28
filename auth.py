@@ -119,28 +119,32 @@ class Login(Resource):
         args = parse.parse_args()
         userid = args['username'].strip()
         password = args['password']
-        # LOGIN_URL = 'http://eip.sye.com.cn/bpm/login'
-        # QUERY_URL = 'http://eip.sye.com.cn/bpm/r?wf_num=R_S007_B016&wf_gridnum=V_S007_G012'
 
-        # session = Session()
-        # res = session.post(url=LOGIN_URL, data={
-        #     'UserName': userid,
-        #     'Password': password
-        # })
-        # if '用户名或密码错误' in res.text:
-        #     abort(401, error='Username or passowrd is incorrect!')
-        # res = session.post(url=QUERY_URL, data={
-        #     'm': userid
-        # })
-        # users = res.json()['rows']
-        users=[{
-            'Userid':'41842',
-            'CnName':'helscn',
-            'JobTitle':'高级工程师',
-            'FolderName':'市场专项',
-            'PhoneNumber':'/',
-            'InternetAddress':''  
-        }]
+        # TODO: 此为测试代码，生产版发布前需要删除
+        if Setting.DEBUG:
+            users = [{
+                'Userid': '41842',
+                'CnName': 'helscn',
+                'JobTitle': '高级工程师',
+                'FolderName': '市场专项',
+                'PhoneNumber': '/',
+                'InternetAddress': ''
+            }]
+        else:
+            LOGIN_URL = 'http://eip.sye.com.cn/bpm/login'
+            QUERY_URL = 'http://eip.sye.com.cn/bpm/r?wf_num=R_S007_B016&wf_gridnum=V_S007_G012'
+
+            session = Session()
+            res = session.post(url=LOGIN_URL, data={
+                'UserName': userid,
+                'Password': password
+            })
+            if '用户名或密码错误' in res.text:
+                abort(401, error='Username or passowrd is incorrect!')
+            res = session.post(url=QUERY_URL, data={
+                'm': userid
+            })
+            users = res.json()['rows']
 
         userinfo = None
         for u in users:
@@ -162,8 +166,8 @@ class Login(Resource):
             user.name = userinfo['name']
             user.title = userinfo['title']
             user.department = userinfo['department']
-            user.phone = userinfo['phone']
-            user.email = userinfo['email']
+            # user.phone = userinfo['phone']
+            # user.email = userinfo['email']
         else:
             user = User(**userinfo)
         user.save()
